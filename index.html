@@ -1,350 +1,408 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Order & Due Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ST TRADERS CHEAPJACK</title>
 
 <style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
 body{
-    font-family:Arial,sans-serif;
-    margin:20px;
-    background:#f4f4f4;
+background:#f5f7fa;
+padding:20px;
 }
+
+.header{
+background:#2563eb;
+color:white;
+padding:20px;
+border-radius:10px;
+margin-bottom:20px;
+}
+
+.header h1{
+font-size:28px;
+}
+
+.header p{
+margin-top:5px;
+}
+
+.dashboard{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:15px;
+margin-bottom:20px;
+}
+
 .card{
-    background:white;
-    padding:15px;
-    border-radius:8px;
-    margin-bottom:15px;
-    box-shadow:0 2px 5px rgba(0,0,0,.1);
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 10px rgba(0,0,0,.1);
 }
-.grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-    gap:10px;
+
+.card h3{
+font-size:16px;
+color:#666;
+margin-bottom:10px;
 }
-input,button,select{
-    padding:10px;
-    width:100%;
-    margin-top:5px;
-    box-sizing:border-box;
+
+.card h2{
+font-size:28px;
 }
+
+.form-card{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 10px rgba(0,0,0,.1);
+margin-bottom:20px;
+}
+
+.form-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:10px;
+}
+
+input,textarea{
+width:100%;
+padding:10px;
+border:1px solid #ddd;
+border-radius:5px;
+}
+
 button{
-    cursor:pointer;
+background:#2563eb;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:5px;
+cursor:pointer;
 }
+
+button:hover{
+background:#1d4ed8;
+}
+
+.search{
+margin-bottom:15px;
+}
+
 table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:15px;
-    background:white;
+width:100%;
+background:white;
+border-collapse:collapse;
+border-radius:10px;
+overflow:hidden;
 }
-th,td{
-    border:1px solid #ddd;
-    padding:8px;
-    text-align:center;
-}
+
 th{
-    background:#eee;
+background:#2563eb;
+color:white;
+padding:12px;
 }
-.paid{
-    color:green;
-    font-weight:bold;
+
+td{
+padding:10px;
+border-bottom:1px solid #eee;
 }
-.partial{
-    color:orange;
-    font-weight:bold;
+
+.status-paid{
+color:green;
+font-weight:bold;
 }
-.overdue{
-    color:red;
-    font-weight:bold;
+
+.status-due{
+color:orange;
+font-weight:bold;
 }
+
+.status-overdue{
+color:red;
+font-weight:bold;
+}
+
 .actions button{
-    width:auto;
-    margin:2px;
+padding:5px 10px;
+margin:2px;
 }
+
 </style>
 </head>
-
 <body>
 
-<h2>Order & Due Tracker</h2>
+<div class="header">
+<h1>ST TRADERS CHEAPJACK</h1>
+<p>Order & Due Management System</p>
+</div>
 
-<div class="card grid">
-    <div>
-        <h3 id="totalOrders">0</h3>
-        <small>Total Orders</small>
-    </div>
+<div class="dashboard">
 
-    <div>
-        <h3 id="totalDue">₹0</h3>
-        <small>Total Due</small>
-    </div>
-
-    <div>
-        <h3 id="overDue">₹0</h3>
-        <small>Overdue</small>
-    </div>
+<div class="card">
+<h3>Total Orders</h3>
+<h2 id="totalOrders">0</h2>
 </div>
 
 <div class="card">
-<h3>Add Order</h3>
+<h3>Total Due</h3>
+<h2 id="totalDue">₹0</h2>
+</div>
+
+<div class="card">
+<h3>Total Collected</h3>
+<h2 id="totalCollected">₹0</h2>
+</div>
+
+<div class="card">
+<h3>Overdue</h3>
+<h2 id="overdueAmount">₹0</h2>
+</div>
+
+</div>
+
+<div class="form-card">
+
+<h2>Create New Order</h2>
+<br>
+
+<div class="form-grid">
 
 <input id="customer" placeholder="Customer Name">
+
 <input id="phone" placeholder="Phone Number">
+
 <input id="product" placeholder="Product">
 
-<input id="amount" type="number" placeholder="Total Amount">
+<input id="quantity" placeholder="Quantity">
 
-<input id="paid" type="number" placeholder="Paid Amount">
+<input id="total" type="number" placeholder="Total Amount">
+
+<input id="paid" type="number" placeholder="Advance Paid">
 
 <input id="dueDate" type="date">
 
-<button onclick="saveOrder()">Save Order</button>
 </div>
 
-<div class="card">
+<br>
+
+<textarea id="notes" placeholder="Notes"></textarea>
+
+<br><br>
+
+<button onclick="saveOrder()">Save Order</button>
+
+</div>
+
+<div class="form-card">
 
 <input
+class="search"
 id="search"
-placeholder="Search Customer / Phone / Product"
-onkeyup="renderTable()">
-
-<div style="display:flex;gap:10px;margin-top:10px;">
-<button onclick="currentFilter='all';renderTable()">All</button>
-<button onclick="currentFilter='due';renderTable()">Due</button>
-<button onclick="currentFilter='paid';renderTable()">Paid</button>
-<button onclick="currentFilter='overdue';renderTable()">Overdue</button>
-</div>
-
-<button onclick="exportCSV()" style="margin-top:10px;">
-Export CSV
-</button>
-
-</div>
+placeholder="Search Customer / Product / Phone"
+onkeyup="filterTable()">
 
 <table>
 
 <thead>
 <tr>
-<th>Order ID</th>
 <th>Customer</th>
-<th>Phone</th>
 <th>Product</th>
 <th>Total</th>
 <th>Paid</th>
 <th>Due</th>
 <th>Due Date</th>
 <th>Status</th>
-<th>Action</th>
 </tr>
 </thead>
 
-<tbody id="tbody"></tbody>
+<tbody id="orderTable"></tbody>
 
 </table>
 
+</div>
+
 <script>
 
-let orders =
-JSON.parse(localStorage.getItem("orders")) || [];
+const API_URL =
+"https://script.google.com/macros/s/AKfycbwurHILPGPK_R7WlPy-r3sHRdNsh6w1oUtrA0i4skY/dev";
 
-let currentFilter = "all";
+let orders=[];
 
-function saveData(){
-    localStorage.setItem(
-        "orders",
-        JSON.stringify(orders)
-    );
+async function saveOrder(){
+
+const total=
+Number(document.getElementById("total").value||0);
+
+const paid=
+Number(document.getElementById("paid").value||0);
+
+const data={
+
+orderNo:"STC-ORD-"+Date.now(),
+
+date:new Date().toISOString().split("T")[0],
+
+customer:customer.value,
+
+phone:phone.value,
+
+product:product.value,
+
+quantity:quantity.value,
+
+total:total,
+
+paid:paid,
+
+due:total-paid,
+
+dueDate:dueDate.value,
+
+status:(total-paid)<=0?"Paid":"Due",
+
+notes:notes.value
+
+};
+
+try{
+
+const response=await fetch(API_URL,{
+method:"POST",
+body:JSON.stringify(data)
+});
+
+const result=await response.json();
+
+if(result.success){
+
+alert("Order Saved");
+
+location.reload();
+
 }
 
-function saveOrder(){
+}catch(err){
 
-    let amount =
-    Number(document.getElementById("amount").value);
+alert("Error Saving Order");
 
-    let paid =
-    Number(document.getElementById("paid").value);
+console.log(err);
 
-    orders.push({
-        id:Date.now(),
-        customer:customer.value,
-        phone:phone.value,
-        product:product.value,
-        amount,
-        paid,
-        dueDate:dueDate.value
-    });
-
-    saveData();
-
-    document.querySelectorAll("input")
-    .forEach(i=>i.value="");
-
-    renderTable();
 }
 
-function getStatus(order){
+}
 
-    let due =
-    order.amount - order.paid;
+async function loadOrders(){
 
-    let today =
-    new Date().toISOString().split("T")[0];
+try{
 
-    if(due <= 0)
-        return "Paid";
+const response=await fetch(API_URL);
 
-    if(order.dueDate < today)
-        return "Overdue";
+const data=await response.json();
 
-    return "Due";
+orders=data.slice(1);
+
+renderTable();
+
+}catch(err){
+
+console.log(err);
+
+}
+
 }
 
 function renderTable(){
 
-    let q =
-    search.value.toLowerCase();
+let html="";
 
-    let html = "";
+let totalDue=0;
+let totalPaid=0;
+let overdue=0;
 
-    let totalDue = 0;
-    let overdueAmount = 0;
+orders.forEach(row=>{
 
-    orders.forEach((o,index)=>{
+let total=Number(row[6]||0);
+let paid=Number(row[7]||0);
+let due=Number(row[8]||0);
 
-        let due =
-        o.amount - o.paid;
+totalDue+=due;
+totalPaid+=paid;
 
-        let status =
-        getStatus(o);
+let status=row[10]||"";
 
-        totalDue += due;
+let cls="status-due";
 
-        if(status==="Overdue")
-            overdueAmount += due;
+if(status==="Paid")
+cls="status-paid";
 
-        let match =
-        `${o.customer} ${o.phone} ${o.product}`
-        .toLowerCase()
-        .includes(q);
-
-        let show = true;
-
-        if(currentFilter==="due")
-            show = status==="Due";
-
-        if(currentFilter==="paid")
-            show = status==="Paid";
-
-        if(currentFilter==="overdue")
-            show = status==="Overdue";
-
-        if(!match || !show)
-            return;
-
-        html += `
-        <tr>
-        <td>${o.id}</td>
-        <td>${o.customer}</td>
-        <td>${o.phone}</td>
-        <td>${o.product}</td>
-        <td>₹${o.amount}</td>
-        <td>₹${o.paid}</td>
-        <td>₹${due}</td>
-        <td>${o.dueDate}</td>
-        <td class="${
-            status==="Paid"
-            ?"paid"
-            :status==="Overdue"
-            ?"overdue"
-            :"partial"
-        }">${status}</td>
-
-        <td class="actions">
-        <button onclick="editOrder(${index})">
-        Edit
-        </button>
-
-        <button onclick="deleteOrder(${index})">
-        Delete
-        </button>
-        </td>
-
-        </tr>
-        `;
-    });
-
-    tbody.innerHTML = html;
-
-    totalOrders.innerText =
-    orders.length;
-
-    totalDue.innerText =
-    "₹" + totalDue;
-
-    overDue.innerText =
-    "₹" + overdueAmount;
+if(status==="Overdue"){
+cls="status-overdue";
+overdue+=due;
 }
 
-function deleteOrder(index){
+html+=`
+<tr>
+<td>${row[2]}</td>
+<td>${row[4]}</td>
+<td>₹${total}</td>
+<td>₹${paid}</td>
+<td>₹${due}</td>
+<td>${row[9]}</td>
+<td class="${cls}">
+${status}
+</td>
+</tr>
+`;
 
-    if(confirm("Delete order?")){
+});
 
-        orders.splice(index,1);
+document.getElementById("orderTable").innerHTML=html;
 
-        saveData();
+document.getElementById("totalOrders").innerText=
+orders.length;
 
-        renderTable();
-    }
+document.getElementById("totalDue").innerText=
+"₹"+totalDue;
+
+document.getElementById("totalCollected").innerText=
+"₹"+totalPaid;
+
+document.getElementById("overdueAmount").innerText=
+"₹"+overdue;
+
 }
 
-function editOrder(index){
+function filterTable(){
 
-    let o = orders[index];
+let value=
+document.getElementById("search")
+.value
+.toLowerCase();
 
-    let paid =
-    prompt(
-        "Enter New Paid Amount",
-        o.paid
-    );
+let rows=
+document.querySelectorAll("#orderTable tr");
 
-    if(paid===null)
-        return;
+rows.forEach(row=>{
 
-    o.paid = Number(paid);
+row.style.display=
+row.innerText.toLowerCase()
+.includes(value)
+?"":"none";
 
-    saveData();
+});
 
-    renderTable();
 }
 
-function exportCSV(){
-
-    let csv =
-    "OrderID,Customer,Phone,Product,Amount,Paid,Due,DueDate\n";
-
-    orders.forEach(o=>{
-
-        csv +=
-        `${o.id},${o.customer},${o.phone},${o.product},${o.amount},${o.paid},${o.amount-o.paid},${o.dueDate}\n`;
-    });
-
-    let blob =
-    new Blob([csv]);
-
-    let a =
-    document.createElement("a");
-
-    a.href =
-    URL.createObjectURL(blob);
-
-    a.download =
-    "due-list.csv";
-
-    a.click();
-}
-
-renderTable();
+loadOrders();
 
 </script>
 
