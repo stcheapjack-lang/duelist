@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Order & Due Tracker</title>
+
+<style>
+body{
+    font-family:Arial,sans-serif;
+    margin:20px;
+    background:#f4f4f4;
+}
+.card{
+    background:white;
+    padding:15px;
+    border-radius:8px;
+    margin-bottom:15px;
+    box-shadow:0 2px 5px rgba(0,0,0,.1);
+}
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:10px;
+}
+input,button,select{
+    padding:10px;
+    width:100%;
+    margin-top:5px;
+    box-sizing:border-box;
+}
+button{
+    cursor:pointer;
+}
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+    background:white;
+}
+th,td{
+    border:1px solid #ddd;
+    padding:8px;
+    text-align:center;
+}
+th{
+    background:#eee;
+}
+.paid{
+    color:green;
+    font-weight:bold;
+}
+.partial{
+    color:orange;
+    font-weight:bold;
+}
+.overdue{
+    color:red;
+    font-weight:bold;
+}
+.actions button{
+    width:auto;
+    margin:2px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Order & Due Tracker</h2>
+
+<div class="card grid">
+    <div>
+        <h3 id="totalOrders">0</h3>
+        <small>Total Orders</small>
+    </div>
+
+    <div>
+        <h3 id="totalDue">₹0</h3>
+        <small>Total Due</small>
+    </div>
+
+    <div>
+        <h3 id="overDue">₹0</h3>
+        <small>Overdue</small>
+    </div>
+</div>
+
+<div class="card">
+<h3>Add Order</h3>
+
+<input id="customer" placeholder="Customer Name">
+<input id="phone" placeholder="Phone Number">
+<input id="product" placeholder="Product">
+
+<input id="amount" type="number" placeholder="Total Amount">
+
+<input id="paid" type="number" placeholder="Paid Amount">
+
+<input id="dueDate" type="date">
+
+<button onclick="saveOrder()">Save Order</button>
+</div>
+
+<div class="card">
+
+<input
+id="search"
+placeholder="Search Customer / Phone / Product"
+onkeyup="renderTable()">
+
+<div style="display:flex;gap:10px;margin-top:10px;">
+<button onclick="currentFilter='all';renderTable()">All</button>
+<button onclick="currentFilter='due';renderTable()">Due</button>
+<button onclick="currentFilter='paid';renderTable()">Paid</button>
+<button onclick="currentFilter='overdue';renderTable()">Overdue</button>
+</div>
+
+<button onclick="exportCSV()" style="margin-top:10px;">
+Export CSV
+</button>
+
+</div>
+
+<table>
+
+<thead>
+<tr>
+<th>Order ID</th>
+<th>Customer</th>
+<th>Phone</th>
+<th>Product</th>
+<th>Total</th>
+<th>Paid</th>
+<th>Due</th>
+<th>Due Date</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="tbody"></tbody>
+
+</table>
+
+<script>
+
+let orders =
+JSON.parse(localStorage.getItem("orders")) || [];
+
+let currentFilter = "all";
+
+function saveData(){
+    localStorage.setItem(
+        "orders",
+        JSON.stringify(orders)
+    );
+}
+
+function saveOrder(){
+
+    let amount =
+    Number(document.getElementById("amount").value);
+
+    let paid =
+    Number(document.getElementById("paid").value);
+
+    orders.push({
+        id:Date.now(),
+        customer:customer.value,
+        phone:phone.value,
+        product:product.value,
+        amount,
+        paid,
+        dueDate:dueDate.value
+    });
+
+    saveData();
+
+    document.querySelectorAll("input")
+    .forEach(i=>i.value="");
+
+    renderTable();
+}
+
+function getStatus(order){
+
+    let due =
+    order.amount - order.paid;
+
+    let today =
+    new Date().toISOString().split("T")[0];
+
+    if(due <= 0)
+        return "Paid";
+
+    if(order.dueDate < today)
+        return "Overdue";
+
+    return "Due";
+}
+
+function renderTable(){
+
+    let q =
+    search.value.toLowerCase();
+
+    let html = "";
+
+    let totalDue = 0;
+    let overdueAmount = 0;
+
+    orders.forEach((o,index)=>{
+
+        let due =
+        o.amount - o.paid;
+
+        let status =
+        getStatus(o);
+
+        totalDue += due;
+
+        if(status==="Overdue")
+            overdueAmount += due;
+
+        let match =
+        `${o.customer} ${o.phone} ${o.product}`
+        .toLowerCase()
+        .includes(q);
+
+        let show = true;
+
+        if(currentFilter==="due")
+            show = status==="Due";
+
+        if(currentFilter==="paid")
+            show = status==="Paid";
+
+        if(currentFilter==="overdue")
+            show = status==="Overdue";
+
+        if(!match || !show)
+            return;
+
+        html += `
+        <tr>
+        <td>${o.id}</td>
+        <td>${o.customer}</td>
+        <td>${o.phone}</td>
+        <td>${o.product}</td>
+        <td>₹${o.amount}</td>
+        <td>₹${o.paid}</td>
+        <td>₹${due}</td>
+        <td>${o.dueDate}</td>
+        <td class="${
+            status==="Paid"
+            ?"paid"
+            :status==="Overdue"
+            ?"overdue"
+            :"partial"
+        }">${status}</td>
+
+        <td class="actions">
+        <button onclick="editOrder(${index})">
+        Edit
+        </button>
+
+        <button onclick="deleteOrder(${index})">
+        Delete
+        </button>
+        </td>
+
+        </tr>
+        `;
+    });
+
+    tbody.innerHTML = html;
+
+    totalOrders.innerText =
+    orders.length;
+
+    totalDue.innerText =
+    "₹" + totalDue;
+
+    overDue.innerText =
+    "₹" + overdueAmount;
+}
+
+function deleteOrder(index){
+
+    if(confirm("Delete order?")){
+
+        orders.splice(index,1);
+
+        saveData();
+
+        renderTable();
+    }
+}
+
+function editOrder(index){
+
+    let o = orders[index];
+
+    let paid =
+    prompt(
+        "Enter New Paid Amount",
+        o.paid
+    );
+
+    if(paid===null)
+        return;
+
+    o.paid = Number(paid);
+
+    saveData();
+
+    renderTable();
+}
+
+function exportCSV(){
+
+    let csv =
+    "OrderID,Customer,Phone,Product,Amount,Paid,Due,DueDate\n";
+
+    orders.forEach(o=>{
+
+        csv +=
+        `${o.id},${o.customer},${o.phone},${o.product},${o.amount},${o.paid},${o.amount-o.paid},${o.dueDate}\n`;
+    });
+
+    let blob =
+    new Blob([csv]);
+
+    let a =
+    document.createElement("a");
+
+    a.href =
+    URL.createObjectURL(blob);
+
+    a.download =
+    "due-list.csv";
+
+    a.click();
+}
+
+renderTable();
+
+</script>
+
+</body>
+</html>
