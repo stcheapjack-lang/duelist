@@ -83,29 +83,65 @@ const API_URL="https://script.google.com/macros/s/AKfycbzKZ284mZeyTDQ4qIFFAyMhDU
 let orders=[];
 
 async function saveOrder(){
-const total=Number(document.getElementById("total").value||0);
-const paid=Number(document.getElementById("paid").value||0);
 
-const data={
+try{
+
+const total =
+Number(document.getElementById("total").value || 0);
+
+const paid =
+Number(document.getElementById("paid").value || 0);
+
+const data = {
+
 action:"addOrder",
+
 orderNo:"STC-ORD-"+Date.now(),
+
 date:new Date().toISOString().split("T")[0],
-customer:customer.value,
-phone:phone.value,
-product:product.value,
-quantity:quantity.value,
+
+customer:document.getElementById("customer").value,
+
+phone:document.getElementById("phone").value,
+
+product:document.getElementById("product").value,
+
+quantity:document.getElementById("quantity").value,
+
 total:total,
+
 paid:paid,
+
 due:total-paid,
-dueDate:dueDate.value,
+
+dueDate:document.getElementById("dueDate").value,
+
 status:(total-paid)<=0?"Paid":"Due",
-orderStatus:orderStatus.value,
-notes:notes.value
+
+orderStatus:document.getElementById("orderStatus").value,
+
+notes:document.getElementById("notes").value
+
 };
 
-const res=await fetch(API_URL,{method:"POST",body:JSON.stringify(data)});
-const result=await res.json();
-if(result.success){alert("Order Saved");location.reload();}
+await fetch(API_URL,{
+method:"POST",
+body:JSON.stringify(data),
+mode:"no-cors"
+});
+
+alert("Order Saved Successfully");
+
+location.reload();
+
+}catch(error){
+
+console.log(error);
+
+alert("Error Saving Order");
+
+}
+
 }
 
 async function loadOrders(){
