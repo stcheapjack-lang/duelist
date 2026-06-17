@@ -3,223 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST TRADERS CHEAPJACK</title>
-
+<title>ST TRADERS CHEAPJACK - Due Management V3</title>
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
-}
-
-body{
-background:#f5f7fa;
-padding:20px;
-}
-
-.header{
-background:#2563eb;
-color:white;
-padding:20px;
-border-radius:10px;
-margin-bottom:20px;
-}
-
-.header h1{
-font-size:28px;
-}
-
-.header p{
-margin-top:5px;
-}
-
-.dashboard{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:15px;
-margin-bottom:20px;
-}
-
-.card{
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 2px 10px rgba(0,0,0,.1);
-}
-
-.card h3{
-font-size:16px;
-color:#666;
-margin-bottom:10px;
-}
-
-.card h2{
-font-size:28px;
-}
-
-.form-card{
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 2px 10px rgba(0,0,0,.1);
-margin-bottom:20px;
-}
-
-.form-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:10px;
-}
-
-input,textarea{
-width:100%;
-padding:10px;
-border:1px solid #ddd;
-border-radius:5px;
-}
-
-button{
-background:#2563eb;
-color:white;
-border:none;
-padding:10px 15px;
-border-radius:5px;
-cursor:pointer;
-}
-
-button:hover{
-background:#1d4ed8;
-}
-
-.search{
-margin-bottom:15px;
-}
-
-table{
-width:100%;
-background:white;
-border-collapse:collapse;
-border-radius:10px;
-overflow:hidden;
-}
-
-th{
-background:#2563eb;
-color:white;
-padding:12px;
-}
-
-td{
-padding:10px;
-border-bottom:1px solid #eee;
-}
-
-.status-paid{
-color:green;
-font-weight:bold;
-}
-
-.status-due{
-color:orange;
-font-weight:bold;
-}
-
-.status-overdue{
-color:red;
-font-weight:bold;
-}
-
-.actions button{
-padding:5px 10px;
-margin:2px;
-}
-
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#f5f7fa;padding:20px}
+.header{background:#2563eb;color:#fff;padding:20px;border-radius:12px;margin-bottom:20px}
+.dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:20px}
+.card,.panel{background:#fff;padding:16px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+input,select,textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px}
+button{background:#2563eb;color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer}
+table{width:100%;border-collapse:collapse}
+th{background:#2563eb;color:#fff}
+th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
+.badge{padding:4px 10px;border-radius:20px;color:#fff}
+.paid{background:#16a34a}.due{background:#f59e0b}.overdue{background:#dc2626}
 </style>
 </head>
 <body>
-
 <div class="header">
 <h1>ST TRADERS CHEAPJACK</h1>
 <p>Order & Due Management System</p>
 </div>
 
 <div class="dashboard">
-
-<div class="card">
-<h3>Total Orders</h3>
-<h2 id="totalOrders">0</h2>
+<div class="card"><h3>Total Orders</h3><h2 id="totalOrders">0</h2></div>
+<div class="card"><h3>Total Due</h3><h2 id="totalDue">₹0</h2></div>
+<div class="card"><h3>Total Collected</h3><h2 id="totalCollected">₹0</h2></div>
+<div class="card"><h3>Overdue</h3><h2 id="overdueAmount">₹0</h2></div>
 </div>
 
-<div class="card">
-<h3>Total Due</h3>
-<h2 id="totalDue">₹0</h2>
-</div>
-
-<div class="card">
-<h3>Total Collected</h3>
-<h2 id="totalCollected">₹0</h2>
-</div>
-
-<div class="card">
-<h3>Overdue</h3>
-<h2 id="overdueAmount">₹0</h2>
-</div>
-
-</div>
-
-<div class="form-card">
-
-<h2>Create New Order</h2>
-<br>
-
+<div class="panel">
+<h2>Create Order</h2><br>
 <div class="form-grid">
-
 <input id="customer" placeholder="Customer Name">
-
 <input id="phone" placeholder="Phone Number">
-
 <input id="product" placeholder="Product">
-
 <input id="quantity" placeholder="Quantity">
-
 <input id="total" type="number" placeholder="Total Amount">
-
 <input id="paid" type="number" placeholder="Advance Paid">
-
 <input id="dueDate" type="date">
-
+<select id="orderStatus">
+<option>Pending</option>
+<option>In Production</option>
+<option>Ready</option>
+<option>Delivered</option>
+<option>Cancelled</option>
+</select>
+</div>
+<br>
+<textarea id="notes" placeholder="Notes"></textarea><br><br>
+<button onclick="saveOrder()">Save Order</button>
 </div>
 
 <br>
 
-<select id="orderStatus">
-<option value="Pending">Pending</option>
-<option value="In Production">In Production</option>
-<option value="Ready">Ready</option>
-<option value="Delivered">Delivered</option>
-<option value="Cancelled">Cancelled</option>
-</select>
-
-<textarea id="notes" placeholder="Notes"></textarea>
-
-<br><br>
-
-<button onclick="saveOrder()">Save Order</button>
-
-</div>
-
-<div class="form-card">
-
-<input
-class="search"
-id="search"
-placeholder="Search Customer / Product / Phone"
-onkeyup="filterTable()">
-
+<div class="panel">
+<input id="search" placeholder="Search..." onkeyup="filterTable()"><br><br>
 <table>
-
 <thead>
 <tr>
 <th>Customer</th>
@@ -228,191 +69,109 @@ onkeyup="filterTable()">
 <th>Paid</th>
 <th>Due</th>
 <th>Due Date</th>
-<th>Status</th>
+<th>Payment Status</th>
+<th>Order Status</th>
+<th>Action</th>
 </tr>
 </thead>
-
 <tbody id="orderTable"></tbody>
-
 </table>
-
 </div>
 
 <script>
-
-const API_URL =
-"https://script.google.com/macros/s/AKfycbzKZ284mZeyTDQ4qIFFAyMhDUbGb-7g7S47_FraNE3IXllkH_AUzmshRH1LNZhXQ0OF/exec";
-
+const API_URL="https://script.google.com/macros/s/AKfycbzKZ284mZeyTDQ4qIFFAyMhDUbGb-7g7S47_FraNE3IXllkH_AUzmshRH1LNZhXQ0OF/exec";
 let orders=[];
 
 async function saveOrder(){
-
-const total=
-Number(document.getElementById("total").value||0);
-
-const paid=
-Number(document.getElementById("paid").value||0);
+const total=Number(document.getElementById("total").value||0);
+const paid=Number(document.getElementById("paid").value||0);
 
 const data={
-
+action:"addOrder",
 orderNo:"STC-ORD-"+Date.now(),
-
 date:new Date().toISOString().split("T")[0],
-
 customer:customer.value,
-
 phone:phone.value,
-
 product:product.value,
-
 quantity:quantity.value,
-
 total:total,
-
 paid:paid,
-
 due:total-paid,
-
 dueDate:dueDate.value,
-
 status:(total-paid)<=0?"Paid":"Due",
-
+orderStatus:orderStatus.value,
 notes:notes.value
-
 };
 
-try{
-
-const response=await fetch(API_URL,{
-method:"POST",
-body:JSON.stringify(data)
-});
-
-const result=await response.json();
-
-if(result.success){
-
-alert("Order Saved");
-
-location.reload();
-
-}
-
-}catch(err){
-
-alert("Error Saving Order");
-
-console.log(err);
-
-}
-
+const res=await fetch(API_URL,{method:"POST",body:JSON.stringify(data)});
+const result=await res.json();
+if(result.success){alert("Order Saved");location.reload();}
 }
 
 async function loadOrders(){
-
-try{
-
-const response=await fetch(API_URL);
-
-const data=await response.json();
-
+const res=await fetch(API_URL);
+const data=await res.json();
 orders=data.slice(1);
-
 renderTable();
-
-}catch(err){
-
-console.log(err);
-
-}
-
 }
 
 function renderTable(){
-
-let html="";
-
-let totalDue=0;
-let totalPaid=0;
-let overdue=0;
-
-orders.forEach(row=>{
-
+let html="",tDue=0,tPaid=0,over=0;
+orders.forEach((row,i)=>{
 let total=Number(row[6]||0);
 let paid=Number(row[7]||0);
 let due=Number(row[8]||0);
+let status=row[10]||"Due";
+let orderStatus=row[11]||"Pending";
 
-totalDue+=due;
-totalPaid+=paid;
+tDue+=due;tPaid+=paid;
 
-let status=row[10]||"";
+let cls=status==="Paid"?"paid":"due";
 
-let cls="status-due";
-
-if(status==="Paid")
-cls="status-paid";
-
-if(status==="Overdue"){
-cls="status-overdue";
-overdue+=due;
-}
-
-html+=`
-<tr>
+html+=`<tr>
 <td>${row[2]}</td>
 <td>${row[4]}</td>
 <td>₹${total}</td>
 <td>₹${paid}</td>
 <td>₹${due}</td>
 <td>${row[9]}</td>
-<td class="${cls}">
-${status}
-</td>
-</tr>
-`;
+<td><span class="badge ${cls}">${status}</span></td>
+<td>${orderStatus}</td>
+<td><button onclick="addPayment('${row[0]}')">Payment</button></td>
+</tr>`;
+});
+orderTable.innerHTML=html;
+totalOrders.innerText=orders.length;
+totalDue.innerText="₹"+tDue;
+totalCollected.innerText="₹"+tPaid;
+overdueAmount.innerText="₹"+over;
+}
 
+async function addPayment(orderNo){
+let amount=prompt("Enter payment amount");
+if(!amount)return;
+
+await fetch(API_URL,{
+method:"POST",
+body:JSON.stringify({
+action:"updatePayment",
+orderNo:orderNo,
+amount:Number(amount)
+})
 });
 
-document.getElementById("orderTable").innerHTML=html;
-
-document.getElementById("totalOrders").innerText=
-orders.length;
-
-document.getElementById("totalDue").innerText=
-"₹"+totalDue;
-
-document.getElementById("totalCollected").innerText=
-"₹"+totalPaid;
-
-document.getElementById("overdueAmount").innerText=
-"₹"+overdue;
-
+alert("Payment Updated");
+location.reload();
 }
 
 function filterTable(){
-
-let value=
-document.getElementById("search")
-.value
-.toLowerCase();
-
-let rows=
-document.querySelectorAll("#orderTable tr");
-
-rows.forEach(row=>{
-
-row.style.display=
-row.innerText.toLowerCase()
-.includes(value)
-?"":"none";
-
+let q=search.value.toLowerCase();
+document.querySelectorAll("#orderTable tr").forEach(r=>{
+r.style.display=r.innerText.toLowerCase().includes(q)?"":"none";
 });
-
 }
 
 loadOrders();
-
 </script>
-
 </body>
 </html>
